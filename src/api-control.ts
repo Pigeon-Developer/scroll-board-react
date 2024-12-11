@@ -67,6 +67,7 @@ export class ApiSensor implements SensorInstance {
     },
   ];
 
+  // @ts-ignore
   constructor(private props: ApiSensorProps) {
     mockAnimate(props);
   }
