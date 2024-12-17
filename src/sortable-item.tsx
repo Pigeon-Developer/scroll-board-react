@@ -42,7 +42,7 @@ function RenderTeamContent(props: SortableItemProps) {
       {item.problemList.map((it) => {
         const klss = clsx("col", it.accepted_time > 0 && "green", it.accepted_time === 0 && it.failed > 0 && "red");
         return (
-          <div className={klss}>
+          <div className={klss} key={it.key}>
             {it.accepted_time > 0 ? formatCostTime(it.accepted_time) : ""}
             {it.failed > 0 ? `(-${it.failed})` : ""}
           </div>
@@ -55,7 +55,7 @@ function RenderTeamContent(props: SortableItemProps) {
 export function SortableItem(props: SortableItemProps) {
   const { active, attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: props.id,
-    // transition: { duration: 1000, easing: "ease" },
+    transition: { duration: 1000, easing: "ease" },
   });
 
   const style = {
@@ -72,6 +72,7 @@ export function SortableItem(props: SortableItemProps) {
   return (
     <div
       id={`team-${props.id}`}
+      className="team"
       ref={setNodeRef}
       style={{
         ...style,

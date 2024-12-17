@@ -31,7 +31,9 @@ function RenderHeader() {
       <div className="col">解决</div>
       <div className="col">惩罚</div>
       {problems.map((it) => (
-        <div className="col">{it.name}</div>
+        <div className="col" key={it.key}>
+          {it.name}
+        </div>
       ))}
     </div>
   );

@@ -118,10 +118,15 @@ export function mockScoreChange() {
     const oldIndex = oldTeamList.findIndex((it) => it.id === teamId);
     const newIndex = rankMap.get(teamId)!;
 
-    moveTeamPosition(teamId, { delta: newIndex - oldIndex });
+    console.log("move team ", teamId, { delta: newIndex - oldIndex, oldRank: oldIndex + 1, newRank: newIndex + 1 });
+    moveTeamPosition(teamId, { delta: newIndex - oldIndex, from: oldIndex, to: newIndex });
   }, 4000);
 
-  return function dispose() {
+  function dispose() {
     clearInterval(timer);
-  };
+  }
+
+  window.stop = dispose;
+
+  return dispose;
 }

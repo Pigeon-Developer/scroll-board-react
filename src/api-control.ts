@@ -9,9 +9,17 @@ function sleep(ms: number) {
 }
 
 async function mockAnimate(props: ApiSensorProps) {
-  console.log("mockAnimate", props);
   // @ts-ignore
   const delta: number = props.event.data.delta;
+  // @ts-ignore
+  const toIndex: number = props.event.data.to;
+
+  const toEl = document.querySelectorAll(`.team`)[toIndex];
+  if (toEl) {
+    // @ts-ignore
+    toEl.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  }
+
   const generator = spring({
     keyframes: [0, 40 * delta],
     bounce: 0,
@@ -33,8 +41,6 @@ async function mockAnimate(props: ApiSensorProps) {
 
     if (done) isDone = true;
   }
-
-  console.log("output", delta, output);
 
   // @TODO 修改为读时间间隔
 
@@ -87,6 +93,12 @@ interface MoveAction {
    * 负数为名次减多少（向上移动，排名会更靠前）
    */
   delta: number;
+
+  /**
+   * 0-base index
+   */
+  from: number;
+  to: number;
 }
 
 /**
@@ -97,7 +109,7 @@ export function moveTeamPosition(id: number, action: MoveAction) {
     const ev = new Event("fake");
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    ev.data = { delta: action.delta };
+    ev.data = { ...action };
 
     ActiveFn.get(id)!({ nativeEvent: ev });
   }
