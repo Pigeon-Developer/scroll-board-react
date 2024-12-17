@@ -48,3 +48,37 @@ interface ProblemDefine {
 
 export const $teams = atom<Team[]>([]);
 export const $problems = atom<ProblemDefine[]>([]);
+
+/**
+ * 按分数对队伍重新排序
+ *
+ * 如果分数都为 0，则使用 id 进行排序
+ */
+export function sortTeam(oldList: Team[]) {
+  const newList = oldList.slice();
+  newList.sort((a, b) => {
+    // 返回负数 会让 a 更加靠前
+
+    const aAccepted = a.problemList.reduce((prev, it) => (it.accepted_time > 0 ? prev + 1 : prev), 0);
+    const bAccepted = b.problemList.reduce((prev, it) => (it.accepted_time > 0 ? prev + 1 : prev), 0);
+
+    if (aAccepted === 0 && bAccepted === 0) {
+      // 计算罚时
+
+      const aFailed = a.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
+      const bFailed = b.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
+
+      if (aFailed === 0 && bFailed === 0) {
+        return a.id - b.id;
+      }
+
+      // 每个罚时 = 1000
+      return (aFailed - bFailed) * 1000;
+    }
+
+    // 1 ac = 1000_0000 让 ac 数量多的总是排前面
+    return (aAccepted - bAccepted) * -1000_0000;
+  });
+
+  return newList;
+}

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Activators, SensorInstance, SensorOptions, SensorProps } from "@dnd-kit/core";
 import { spring } from "motion";
-import { randomInt } from "./util";
 
 export type ApiSensorProps = SensorProps<unknown>;
 
@@ -81,27 +80,25 @@ export function registerActiveFn(id: number, fn: () => void) {
   ActiveFn.set(id, fn);
 }
 
-// 模拟一个随机排名变化
-export function mockScoreChange() {
-  const timer = setInterval(() => {
-    const teamId = randomInt(80);
+interface MoveAction {
+  /**
+   * 移动几个格子
+   *
+   * 负数为名次减多少（向上移动，排名会更靠前）
+   */
+  delta: number;
+}
 
-    // 上下变化
-    const delta = randomInt(80) - 40;
+/**
+ * @TODO 需要做成 promise
+ */
+export function moveTeamPosition(id: number, action: MoveAction) {
+  if (ActiveFn.has(id)) {
+    const ev = new Event("fake");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ev.data = { delta: action.delta };
 
-    console.log("team ", teamId, "名次变化", delta);
-
-    if (ActiveFn.has(teamId)) {
-      const ev = new Event("fake");
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      ev.data = { delta };
-
-      ActiveFn.get(teamId)!({ nativeEvent: ev });
-    }
-  }, 4000);
-
-  return function dispose() {
-    clearInterval(timer);
-  };
+    ActiveFn.get(id)!({ nativeEvent: ev });
+  }
 }
