@@ -1,7 +1,5 @@
-import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import "./sortable-item.less";
-import { registerActiveFn } from "./api-control";
 import { $teams } from "./state";
 import clsx from "clsx";
 import { formatCostTime } from "./util";
@@ -53,34 +51,25 @@ function RenderTeamContent(props: SortableItemProps) {
 }
 
 export function SortableItem(props: SortableItemProps) {
-  const { active, attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: props.id,
-    transition: { duration: 1000, easing: "ease" },
-  });
+  const teams = useStore($teams);
+  const item = teams.find((it) => it.id === props.id)!;
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Transform.toString({
+      x: 0,
+      y: (item.rank - props.id - 1) * 40,
+      scaleX: 1,
+      scaleY: 1,
+    }),
   };
-
-  if (listeners) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    registerActiveFn(props.id, listeners.onFakeApiCall);
-  }
 
   return (
     <div
       id={`team-${props.id}`}
       className="team"
-      ref={setNodeRef}
       style={{
         ...style,
-        backgroundColor: "#fff",
-        position: "relative",
-        zIndex: active && active.id === props.id ? 10 : 1,
       }}
-      {...attributes}
     >
       <RenderTeamContent id={props.id} />
     </div>

@@ -62,22 +62,44 @@ export function sortTeam(oldList: Team[]) {
     const aAccepted = a.problemList.reduce((prev, it) => (it.accepted_time > 0 ? prev + 1 : prev), 0);
     const bAccepted = b.problemList.reduce((prev, it) => (it.accepted_time > 0 ? prev + 1 : prev), 0);
 
+    const aFailed = a.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
+    const bFailed = b.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
+
     if (aAccepted === 0 && bAccepted === 0) {
+      // 两队都没有 ac 的题目
       // 计算罚时
 
-      const aFailed = a.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
-      const bFailed = b.problemList.reduce((prev, it) => (it.failed > 0 ? prev + 1 : prev), 0);
-
       if (aFailed === 0 && bFailed === 0) {
+        // 两队都没有提交过代码
         return a.id - b.id;
       }
 
-      // 每个罚时 = 1000
-      return (aFailed - bFailed) * 1000;
+      // 每个罚时 = 1_000_000_000
+      return (aFailed - bFailed) * 1_000_000_000;
     }
 
-    // 1 ac = 1000_0000 让 ac 数量多的总是排前面
-    return (aAccepted - bAccepted) * -1000_0000;
+    if (aAccepted === bAccepted) {
+      // 两队 ac 数量一致
+      if (aFailed !== bFailed) {
+        // 优先考虑罚时
+        return (aFailed - bFailed) * 1_000_000_000;
+      }
+
+      const aTotalAcCost = a.problemList.reduce(
+        (prev, it) => (it.accepted_time > 0 ? prev + it.accepted_time : prev),
+        0,
+      );
+      const bTotalAcCost = b.problemList.reduce(
+        (prev, it) => (it.accepted_time > 0 ? prev + it.accepted_time : prev),
+        0,
+      );
+
+      // 让耗时小的排前面
+      return (aTotalAcCost - bTotalAcCost) * 1_000_000;
+    }
+
+    // 1 ac = 1_000_000_000_000 让 ac 数量多的总是排前面
+    return (aAccepted - bAccepted) * -1_000_000_000_000;
   });
 
   return newList;

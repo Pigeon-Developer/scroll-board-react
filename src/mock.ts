@@ -1,4 +1,3 @@
-import { moveTeamPosition } from "./api-control";
 import { $problems, $teams, sortTeam, Team } from "./state";
 import { randomColor, randomInt } from "./util";
 
@@ -18,7 +17,7 @@ export function prepareMockData() {
     return {
       id: index,
       bg: randomColor(),
-      rank: -1,
+      rank: index + 1,
       problemList: initProblem.map((it) => {
         return {
           key: it.key,
@@ -59,6 +58,8 @@ export function mockScoreChange() {
       return;
     }
 
+    console.log("mock change", "teamId", teamId, direction, canChangeProblem);
+
     const nextTeamList = oldTeamList.slice().filter((it) => it.id !== teamId);
 
     const nowMs = +new Date();
@@ -92,12 +93,12 @@ export function mockScoreChange() {
         return rankMap.set(localTeam.id, index);
       }
 
-      rankMap.set(localTeam.id, -1);
+      rankMap.set(localTeam.id, index);
     });
 
     // 这里更新数据时需要注意顺序
     // 回写到 teams 中的数据，循序需要和这个函数开始时的一致
-    // 数据中的顺序是在动画结束后才会修改
+    // 视觉上的排序依赖 rank
     $teams.set(
       oldTeamList.map((it) => {
         let newTeam = { ...it };
@@ -114,13 +115,7 @@ export function mockScoreChange() {
         return newTeam;
       }),
     );
-
-    const oldIndex = oldTeamList.findIndex((it) => it.id === teamId);
-    const newIndex = rankMap.get(teamId)!;
-
-    console.log("move team ", teamId, { delta: newIndex - oldIndex, oldRank: oldIndex + 1, newRank: newIndex + 1 });
-    moveTeamPosition(teamId, { delta: newIndex - oldIndex, from: oldIndex, to: newIndex });
-  }, 4000);
+  }, 1500);
 
   function dispose() {
     clearInterval(timer);
