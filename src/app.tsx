@@ -4,17 +4,34 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { useStore } from "@nanostores/react";
 import { SortableItem } from "./sortable-item";
 import { ApiSensor, mockScoreChange } from "./api-control";
-import { $teams } from "./state";
-import { randomColor, randomInt } from "./util";
+import { $problems, $teams } from "./state";
+import { randomColor } from "./util";
+import "./sortable-item.less";
+
+const baseA = "A".charCodeAt(0);
+
+const initProblem = new Array(5).fill(0).map((_, index) => {
+  return {
+    key: `${index}`,
+    name: String.fromCharCode(baseA + index),
+  };
+});
+
+$problems.set(initProblem);
 
 const initList = new Array(80).fill(0).map((_, index) => {
   return {
     id: index,
     bg: randomColor(),
-    score1: randomInt(20),
-    score2: randomInt(20),
-    score3: randomInt(20),
-    score4: randomInt(20),
+    rank: -1,
+    problemList: initProblem.map((it) => {
+      return {
+        key: it.key,
+        total: 0,
+        failed: 0,
+        accepted_time: 0,
+      };
+    }),
   };
 });
 
@@ -32,6 +49,21 @@ function handleDragEnd(event: DragEndEvent) {
   }
 }
 
+function RenderHeader() {
+  const problems = useStore($problems);
+  return (
+    <div className="header">
+      <div className="col">rank</div>
+      <div className="col">ID</div>
+      <div className="col">解决</div>
+      <div className="col">惩罚</div>
+      {problems.map((it) => (
+        <div className="col">{it.name}</div>
+      ))}
+    </div>
+  );
+}
+
 export default function App() {
   const teams = useStore($teams);
   const sensors = useSensors(useSensor(ApiSensor));
@@ -41,12 +73,15 @@ export default function App() {
   }, []);
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={teams} strategy={verticalListSortingStrategy}>
-        {teams.map((team) => (
-          <SortableItem key={team.id} id={team.id} item={team} />
-        ))}
-      </SortableContext>
-    </DndContext>
+    <div>
+      <RenderHeader />
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={teams} strategy={verticalListSortingStrategy}>
+          {teams.map((team) => (
+            <SortableItem key={team.id} id={team.id} item={team} />
+          ))}
+        </SortableContext>
+      </DndContext>
+    </div>
   );
 }

@@ -16,7 +16,7 @@ async function mockAnimate(props: ApiSensorProps) {
   const generator = spring({
     keyframes: [0, 40 * delta],
     bounce: 0,
-    duration: 1,
+    duration: 1000,
   });
 
   const output = [];
@@ -34,6 +34,8 @@ async function mockAnimate(props: ApiSensorProps) {
 
     if (done) isDone = true;
   }
+
+  console.log("output", delta, output);
 
   // @TODO 修改为读时间间隔
 
@@ -97,7 +99,7 @@ export function mockScoreChange() {
 
       ActiveFn.get(teamId)!({ nativeEvent: ev });
     }
-  }, 2000);
+  }, 4000);
 
   return function dispose() {
     clearInterval(timer);

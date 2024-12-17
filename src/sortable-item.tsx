@@ -2,17 +2,12 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import "./sortable-item.less";
 import { registerActiveFn } from "./api-control";
+import { Team } from "./state";
 
 export interface SortableItemProps {
   id: number;
 
-  item: {
-    bg: string;
-    score1: number;
-    score2: number;
-    score3: number;
-    score4: number;
-  };
+  item: Team;
 }
 
 export function SortableItem(props: SortableItemProps) {
@@ -32,7 +27,25 @@ export function SortableItem(props: SortableItemProps) {
     registerActiveFn(props.id, listeners.onFakeApiCall);
   }
 
-  const total = props.item.score1 + props.item.score2 + props.item.score3 + props.item.score4;
+  const item = props.item;
+
+  const totalSolved = item.problemList.reduce((prev, it) => {
+    if (it.accepted_time > 0) {
+      return prev + 1;
+    }
+    return prev;
+  }, 0);
+
+  // 有多少题目提交过但未解决
+  const totalPenalty = item.problemList.reduce((prev, it) => {
+    if (it.accepted_time > 0) {
+      return prev;
+    }
+    if (it.total) {
+      return prev + 1;
+    }
+    return prev;
+  }, 0);
   return (
     <div
       id={`team-${props.id}`}
@@ -45,12 +58,13 @@ export function SortableItem(props: SortableItemProps) {
       {...attributes}
       className="item"
     >
-      <div className="col">昵称 {props.id}</div>
-      <div className="col">总分 {total}</div>
-      <div className="col">得分 1 {props.item.score1}</div>
-      <div className="col">得分 2 {props.item.score2}</div>
-      <div className="col">得分 3 {props.item.score3}</div>
-      <div className="col">得分 4 {props.item.score4}</div>
+      <div className="col">{item.rank}</div>
+      <div className="col">{props.id}</div>
+      <div className="col">{totalSolved}</div>
+      <div className="col">{totalPenalty}</div>
+      {item.problemList.map((it) => (
+        <div className="col">{it.accepted_time}</div>
+      ))}
     </div>
   );
 }
