@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import "./sortable-item.less";
-import { registerActiveFn } from "./api-control";
+import { getActiveId, registerActiveFn } from "./api-control";
 import { $teams } from "./state";
 import clsx from "clsx";
 import { formatCostTime } from "./util";
@@ -59,7 +59,7 @@ export function SortableItem(props: SortableItemProps) {
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: getActiveId() >= 0 ? CSS.Transform.toString(transform) : undefined,
     transition,
   };
 
@@ -72,13 +72,10 @@ export function SortableItem(props: SortableItemProps) {
   return (
     <div
       id={`team-${props.id}`}
-      className="team"
+      className={clsx("team", active && active.id === props.id && "active")}
       ref={setNodeRef}
       style={{
         ...style,
-        backgroundColor: "#fff",
-        position: "relative",
-        zIndex: active && active.id === props.id ? 10 : 1,
       }}
       {...attributes}
     >

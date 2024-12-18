@@ -23,3 +23,7 @@ export function formatCostTime(ms: number) {
   const afterDot = Math.floor(rest / 100);
   return `${padZero(m)}:${padZero(s)}.${afterDot}`;
 }
+
+export function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
