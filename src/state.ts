@@ -105,6 +105,8 @@ export function sortTeam(oldList: Team[]) {
           newList[leftIndex] = right;
           newList[rightIndex] = left;
         }
+
+        continue;
       }
 
       if (hScoreLeft.ac === hScoreRight.ac) {

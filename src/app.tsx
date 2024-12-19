@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { DndContext, closestCenter, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { DndContext, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useStore } from "@nanostores/react";
 import { SortableItem } from "./sortable-item";
 import { ApiSensor } from "./api-control";
@@ -10,16 +10,14 @@ import "./header.less";
 
 prepareMockData();
 
-function handleDragEnd(event: DragEndEvent) {
-  const { active, over } = event;
-
+function handleDragEnd() {
   const teams = $teams.get();
-  if (active.id !== over!.id) {
-    const oldIndex = teams.findIndex((it) => it.id === active.id);
-    const newIndex = teams.findIndex((it) => it.id === over!.id);
+  const next = teams.slice();
+  next.sort((a, b) => {
+    return a.rank - b.rank;
+  });
 
-    $teams.set(arrayMove(teams, oldIndex, newIndex));
-  }
+  $teams.set(next);
 }
 
 function RenderHeader() {

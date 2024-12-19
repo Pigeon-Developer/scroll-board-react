@@ -85,12 +85,7 @@ async function makeRandomData(startMs: number) {
   const rankMap = new Map<number, number>();
 
   sortedList.forEach((localTeam, index) => {
-    const hasSubmit = localTeam.problemList.some((it) => it.total > 0);
-    if (hasSubmit) {
-      return rankMap.set(localTeam.id, index);
-    }
-
-    rankMap.set(localTeam.id, -1);
+    rankMap.set(localTeam.id, index);
   });
 
   // 这里更新数据时需要注意顺序
