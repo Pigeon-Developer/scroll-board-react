@@ -116,6 +116,10 @@ async function makeRandomData(startMs: number) {
   const oldIndex = oldTeamList.findIndex((it) => it.id === teamId);
   const newIndex = rankMap.get(teamId)!;
 
+  if (oldIndex === newIndex) {
+    return;
+  }
+
   console.log("move team ", teamId, { delta: newIndex - oldIndex, oldRank: oldIndex + 1, newRank: newIndex + 1 });
   await moveTeamPosition(teamId, { delta: newIndex - oldIndex, from: oldIndex, to: newIndex });
 }

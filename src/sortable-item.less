@@ -8,6 +8,16 @@
   height: 40px;
   &.active {
     z-index: 10;
+
+    &::after {
+      position: absolute;
+      content: " ";
+      width: 100%;
+      height: 100%;
+      border: #333 solid 2px;
+      top: 0;
+      left: 0;
+    }
   }
 }
 
@@ -22,6 +32,8 @@
 
   .col {
     width: 20%;
+    line-height: 40px;
+    text-align: center;
 
     &.green {
       background-color: #73d13d;
